@@ -37,6 +37,21 @@ services:
       timeout: 5s
       retries: 10
 
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - '11434:11434' # Ollama API
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:11434']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   n8n_data:
   postgres_data:
+  ollama_data:
