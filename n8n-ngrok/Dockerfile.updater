@@ -1,0 +1,30 @@
+# Use Python alpine for smaller image size
+FROM python:3.11-alpine
+
+# Install required packages
+RUN apk add --no-cache curl jq
+
+# Set working directory
+WORKDIR /app
+
+# Copy the updater script
+COPY ngrok-updater.py .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir requests
+
+# Create logs directory
+RUN mkdir -p /app/logs
+
+# Create non-root user for security
+RUN addgroup -g 1000 updater && \
+    adduser -D -s /bin/sh -u 1000 -G updater updater
+
+# Change ownership of the app directory
+RUN chown -R updater:updater /app
+
+# Switch to non-root user
+USER updater
+
+# Run the updater script
+CMD ["python", "ngrok-updater.py"]
